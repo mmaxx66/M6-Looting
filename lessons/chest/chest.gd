@@ -1,11 +1,16 @@
 extends Area2D
 
+@export var possible_items: Array[PackedScene] = []
 @onready var canvas_group: CanvasGroup = $CanvasGroup
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 
 func open() -> void:
 	animation_player.play("open")
 	input_pickable = false
+	if possible_items.is_empty():
+		return
+	for current_index in range(randi_range(1, 3)):
+		_spawn_random_item()
 
 func _ready() -> void:
 	canvas_group.material.set_shader_parameter("line_thickness", 3.0)
@@ -32,3 +37,7 @@ func _input_event(viewport: Viewport, event: InputEvent, shape_index: int):
 	
 	if event_is_mouse_click:
 		open()
+		
+func _spawn_random_item() -> void:
+	var loot_item: Area2D = possible_items.pick_random().instantiate()
+	add_child(loot_item)
